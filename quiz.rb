@@ -4,7 +4,8 @@ QUIZ = {
   },
 
   question_2: {
-    prompt: "What is your favorite color?"
+    prompt: "What is your favorite color?",
+    display_proc: ->(color) { "The color is #{color}." }
   },
 
   question_3: {
@@ -43,4 +44,14 @@ QUIZ.each do |name, question_hash|
   answers[name] = answer
 end
 
-p answers
+display_answers = Hash[
+  answers.map do |name, answer|
+    if display_proc = QUIZ[name][:display_proc]
+      [name, display_proc[answer]]
+    else
+      [name, answer]
+    end
+  end
+]
+
+p display_answers

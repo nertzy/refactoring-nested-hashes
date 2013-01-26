@@ -23,25 +23,25 @@ class Question
 
   def answer
     if @question_hash[:choices]
-      multiple_choice_answer(@question_hash)
+      multiple_choice_answer
     else
-      simple_answer(@question_hash)
+      simple_answer
     end
   end
 
   private
 
-  def simple_answer(question_hash)
-    print question_hash[:prompt], " "
+  def simple_answer
+    print @question_hash[:prompt], " "
     gets.chomp
   end
 
-  def multiple_choice_answer(question_hash)
-    choices = question_hash[:choices]
+  def multiple_choice_answer
+    choices = @question_hash[:choices]
     answer = nil
 
     until choices.include?(answer)
-      print question_hash[:prompt], " "
+      print @question_hash[:prompt], " "
       answer = gets.chomp
       puts "You must pick an answer from #{choices}" unless choices.include?(answer)
     end

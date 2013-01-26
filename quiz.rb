@@ -1,6 +1,4 @@
 class Question
-  attr_reader :display_proc
-
   def initialize(prompt, choices = nil, display_proc = nil)
     @prompt = prompt
     @choices = choices
@@ -12,6 +10,14 @@ class Question
       multiple_choice_answer
     else
       simple_answer
+    end
+  end
+
+  def display_answer(answer)
+    if @display_proc
+      @display_proc[answer]
+    else
+      answer
     end
   end
 
@@ -52,11 +58,8 @@ end
 
 display_answers = Hash[
   answers.map do |name, answer|
-    if display_proc = QUIZ[name].display_proc
-      [name, display_proc[answer]]
-    else
-      [name, answer]
-    end
+    question = QUIZ[name]
+    [name, question.display_answer(answer)]
   end
 ]
 

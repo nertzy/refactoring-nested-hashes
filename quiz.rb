@@ -16,32 +16,43 @@ QUIZ = {
 
 answers = {}
 
-def simple_answer(question_hash)
-  print question_hash[:prompt], " "
-  gets.chomp
-end
-
-def multiple_choice_answer(question_hash)
-  choices = question_hash[:choices]
-  answer = nil
-
-  until choices.include?(answer)
-    print question_hash[:prompt], " "
-    answer = gets.chomp
-    puts "You must pick an answer from #{choices}" unless choices.include?(answer)
+class Question
+  def initialize(question_hash)
+    @question_hash = question_hash
   end
 
-  answer
+  def answer
+    if @question_hash[:choices]
+      multiple_choice_answer(@question_hash)
+    else
+      simple_answer(@question_hash)
+    end
+  end
+
+  private
+
+  def simple_answer(question_hash)
+    print question_hash[:prompt], " "
+    gets.chomp
+  end
+
+  def multiple_choice_answer(question_hash)
+    choices = question_hash[:choices]
+    answer = nil
+
+    until choices.include?(answer)
+      print question_hash[:prompt], " "
+      answer = gets.chomp
+      puts "You must pick an answer from #{choices}" unless choices.include?(answer)
+    end
+
+    answer
+  end
 end
 
 QUIZ.each do |name, question_hash|
-  answer = if question_hash[:choices]
-    multiple_choice_answer(question_hash)
-  else
-    simple_answer(question_hash)
-  end
-
-  answers[name] = answer
+  question = Question.new(question_hash)
+  answers[name] = question.answer
 end
 
 display_answers = Hash[

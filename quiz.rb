@@ -1,28 +1,14 @@
-QUIZ = {
-  question_1: {
-    prompt: "What is your name?"
-  },
-
-  question_2: {
-    prompt: "What is your favorite color?",
-    display_proc: ->(color) { "The color is #{color}." }
-  },
-
-  question_3: {
-    prompt: "What is your favorite integer between 1 and 5?",
-    choices: %w[1 2 3 4 5]
-  }
-}
-
-answers = {}
-
 class Question
-  def initialize(question_hash)
-    @question_hash = question_hash
+  attr_reader :display_proc
+
+  def initialize(prompt, choices = nil, display_proc = nil)
+    @prompt = prompt
+    @choices = choices
+    @display_proc = display_proc
   end
 
   def answer
-    if @question_hash[:choices]
+    if @choices
       multiple_choice_answer
     else
       simple_answer
@@ -32,32 +18,41 @@ class Question
   private
 
   def simple_answer
-    print @question_hash[:prompt], " "
+    print @prompt, " "
     gets.chomp
   end
 
   def multiple_choice_answer
-    choices = @question_hash[:choices]
     answer = nil
 
-    until choices.include?(answer)
-      print @question_hash[:prompt], " "
+    until @choices.include?(answer)
+      print @prompt, " "
       answer = gets.chomp
-      puts "You must pick an answer from #{choices}" unless choices.include?(answer)
+      puts "You must pick an answer from #{@choices}" unless @choices.include?(answer)
     end
 
     answer
   end
 end
 
-QUIZ.each do |name, question_hash|
-  question = Question.new(question_hash)
+QUIZ = {
+  question_1: Question.new("What is your name?"),
+  question_2: Question.new("What is your favorite color?",
+                           nil,
+                           ->(color) { "The color is #{color}." }),
+  question_3: Question.new("What is your favorite integer between 1 and 5?",
+                           %w[1 2 3 4 5])
+}
+
+answers = {}
+
+QUIZ.each do |name, question|
   answers[name] = question.answer
 end
 
 display_answers = Hash[
   answers.map do |name, answer|
-    if display_proc = QUIZ[name][:display_proc]
+    if display_proc = QUIZ[name].display_proc
       [name, display_proc[answer]]
     else
       [name, answer]

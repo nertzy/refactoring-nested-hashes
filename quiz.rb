@@ -1,5 +1,8 @@
 class Question
-  def initialize(prompt, choices = nil, display_proc = nil)
+  attr_reader :name
+
+  def initialize(name, prompt, choices = nil, display_proc = nil)
+    @name = name
     @prompt = prompt
     @choices = choices
     @display_proc = display_proc
@@ -41,25 +44,28 @@ class Question
   end
 end
 
-QUIZ = {
-  question_1: Question.new("What is your name?"),
-  question_2: Question.new("What is your favorite color?",
-                           nil,
-                           ->(color) { "The color is #{color}." }),
-  question_3: Question.new("What is your favorite integer between 1 and 5?",
-                           %w[1 2 3 4 5])
-}
+QUESTIONS = [
+  Question.new(:question_1,
+               "What is your name?"),
+  Question.new(:question_2,
+               "What is your favorite color?",
+               nil,
+               ->(color) { "The color is #{color}." }),
+  Question.new(:question_3,
+               "What is your favorite integer between 1 and 5?",
+               %w[1 2 3 4 5])
+]
 
 answers = {}
 
-QUIZ.each do |name, question|
-  answers[name] = question.answer
+QUESTIONS.each do |question|
+  answers[question.name] = question.answer
 end
 
 display_answers = Hash[
-  answers.map do |name, answer|
-    question = QUIZ[name]
-    [name, question.display_answer(answer)]
+  QUESTIONS.map do |question|
+    answer = answers[question.name]
+    [question.name, question.display_answer(answer)]
   end
 ]
 
